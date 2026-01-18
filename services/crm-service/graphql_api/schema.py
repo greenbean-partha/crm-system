@@ -1,12 +1,7 @@
 import strawberry
 from typing import List
-from django.conf import settings
 from .models import Lead
-
-def get_company_ids_from_headers(info):
-    # TEMP: provided by gateway 
-    header = info.context.request.headers.get("x-company-ids", "")
-    return [int(x) for x in header.split(",") if x]
+from .kafka import publish_lead_created
 
 @strawberry.type
 class LeadType:
@@ -17,14 +12,24 @@ class LeadType:
     company_id: int
 
 @strawberry.type
+class Mutation:
+    @strawberry.mutation
+    def create_lead(self, name: str, email: str, company_id: int) -> LeadType:
+        lead = Lead.objects.create(
+            name=name,
+            email=email,
+            company_id=company_id,
+            status="NEW",
+        )
+        publish_lead_created({
+            "lead_id": lead.id,
+        })
+        return lead
+
+@strawberry.type
 class Query:
     @strawberry.field
-    def leads(self, info) -> List[LeadType]:
-        company_ids = get_company_ids_from_headers(info)
-        qs = Lead.objects.all()
-        if company_ids:
-            qs = qs.filter(company_id__in=company_ids)
-        return qs
+    def leads(self) -> List[LeadType]:
+        return Lead.objects.all()
 
-schema = strawberry.Schema(query=Query)
-
+schema = strawberry.Schema(query=Query, mutation=Mutation)

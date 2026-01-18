@@ -128,3 +128,13 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+import time
+from django.db import connections
+from django.db.utils import OperationalError
+
+for _ in range(10):
+    try:
+        connections["default"].cursor()
+        break
+    except OperationalError:
+        time.sleep(1)
