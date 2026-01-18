@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  postgres-identity:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: identity
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+
+  postgres-crm:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: crm
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+
+  identity-service:
+    build: ./services/identity-service
+    depends_on:
+      - postgres-identity
+    ports:
+      - "8001:8000"
+
+  crm-service:
+    build: ./services/crm-service
+    depends_on:
+      - postgres-crm
+      - kafka
+    ports:
+      - "8002:8000"
