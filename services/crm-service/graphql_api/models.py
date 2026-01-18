@@ -6,6 +6,7 @@ class Lead(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField()
     status = models.CharField(max_length=50, default="NEW")
+    company_id = models.IntegerField()  # FK via federation
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
