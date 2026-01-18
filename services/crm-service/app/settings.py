@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'strawberry.django',
+    'graphql_api',
+
 ]
 
 MIDDLEWARE = [
@@ -73,19 +76,19 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+
 DATABASES = {
-    DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "crm",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "postgres-crm",
-        "PORT": "5432",
-    }
+ "default": {
+     "ENGINE": "django.db.backends.postgresql",
+     "NAME": "crm",
+     "USER": "postgres",
+     "PASSWORD": "postgres",
+     "HOST": "postgres-crm",
+     "PORT": "5432",
+ }
 }
 
-}
+
 
 
 # Password validation
