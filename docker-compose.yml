@@ -33,6 +33,8 @@ services:
 
   identity-service:
     build: ./services/identity-service
+    volumes:
+      - ./services/identity-service:/app
     depends_on:
       - postgres-identity
     ports:
@@ -40,6 +42,8 @@ services:
 
   crm-service:
     build: ./services/crm-service
+    volumes:
+      - ./services/crm-service:/app
     depends_on:
       - postgres-crm
       - kafka
