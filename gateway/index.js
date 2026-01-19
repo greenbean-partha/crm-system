@@ -1,6 +1,7 @@
 const { ApolloServer } = require("@apollo/server");
 const { startStandaloneServer } = require("@apollo/server/standalone");
 const { ApolloGateway, IntrospectAndCompose } = require("@apollo/gateway");
+const fetch = require("node-fetch");
 
 const gateway = new ApolloGateway({
   supergraphSdl: new IntrospectAndCompose({
@@ -17,6 +18,13 @@ const server = new ApolloServer({
   introspection: true,
 });
 
-startStandaloneServer(server, { listen: { port: 4000 } })
-  .then(({ url }) => console.log(`🚀 Gateway ready at ${url}`))
-  .catch(console.error);
+startStandaloneServer(server, {
+  listen: { port: 4000 },
+  context: async ({ req }) => {
+    return {
+        headers: {
+        "x-company-id": req.headers["x-company-id"],
+        },
+    };
+  },
+});

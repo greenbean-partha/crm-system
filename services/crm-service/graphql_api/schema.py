@@ -2,6 +2,7 @@ import strawberry
 from typing import List
 from .models import Lead
 from .kafka import publish_lead_created
+import requests
 
 @strawberry.federation.type(keys=["id"])
 class LeadType:
@@ -29,9 +30,30 @@ class Mutation:
 @strawberry.type
 class Query:
     @strawberry.field
-    def leads(self) -> List[LeadType]:
-        return Lead.objects.all()
+    def leads(self, info) -> List[LeadType]:
+        request = info.context["request"]
+        company_id = request.headers.get("x-company-id")
 
+        if not company_id:
+            return Lead.objects.none()
+
+        # Ask identity-service for scope
+        res = requests.post(
+            "http://identity-service:8000/graphql/",
+            json={
+                "query": """
+                query ($id: Int!) {
+                    companyScope(companyId: $id)
+                }
+                """,
+                "variables": {"id": int(company_id)},
+            },
+            timeout=5,
+        )
+
+        scope = res.json()["data"]["companyScope"]
+
+        return Lead.objects.filter(company_id__in=scope)
 schema = strawberry.federation.Schema(
     query=Query,
     mutation=Mutation,

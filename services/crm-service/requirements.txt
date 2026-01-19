@@ -2,3 +2,4 @@ django==5.0.1
 strawberry-graphql[django]
 psycopg2-binary
 kafka-python
+requests
