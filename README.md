@@ -302,7 +302,7 @@ Frontend - http://localhost:3000
 
 Gateway (single entry point) - http://localhost:4000/graphql
 
-Identity Service (internal) - Identity Service (internal)
+Identity Service (internal) - (http://localhost:8001/graphql)
 
 CRM Service (internal) - http://localhost:8002/graphql
 
