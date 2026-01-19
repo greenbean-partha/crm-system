@@ -9,18 +9,15 @@ import {
 import App from "./App";
 
 function Root() {
-  const companyId = localStorage.getItem("companyId") || "";
-
   const client = new ApolloClient({
-    link: new HttpLink({
-      uri: "/graphql",
-      headers: companyId ? { "x-company-id": companyId } : {},
-    }),
-    cache: new InMemoryCache(),
-  });
+  link: new HttpLink({
+    uri: "/graphql",
+  }),
+  cache: new InMemoryCache(),
+});
 
   return (
-    <ApolloProvider client={client} key={companyId}>
+    <ApolloProvider client={client}>
       <App />
     </ApolloProvider>
   );

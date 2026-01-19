@@ -11,15 +11,14 @@ const GET_COMPANIES = gql`
 `;
 
 const GET_LEADS = gql`
-  {
-    leads {
+  query ($companyId: Int!) {
+    leads(companyId: $companyId) {
       id
       name
       companyId
     }
   }
 `;
-
 const CREATE_LEAD = gql`
   mutation ($name: String!, $email: String!, $companyId: Int!) {
     createLead(name: $name, email: $email, companyId: $companyId) {
@@ -40,10 +39,11 @@ export default function App() {
   const {
     data: leadData,
     refetch: refetchLeads,
-  } = useQuery(GET_LEADS, {
-    fetchPolicy: "network-only",
-  });
-
+    } = useQuery(GET_LEADS, {
+        variables: companyId ? { companyId: parseInt(companyId) } : undefined,
+        skip: !companyId,
+        fetchPolicy: "network-only",
+    });
   const [createLead] = useMutation(CREATE_LEAD);
 
   const onCompanyChange = async (e) => {

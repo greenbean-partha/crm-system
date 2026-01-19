@@ -30,29 +30,23 @@ class Mutation:
 @strawberry.type
 class Query:
     @strawberry.field
-    def leads(self, info) -> List[LeadType]:
-        request = info.context["request"]
-        company_id = request.headers.get("x-company-id")
+    def leads(self, company_id: int) -> List[LeadType]:
+        import requests
 
-        if not company_id:
-            return Lead.objects.none()
-
-        # Ask identity-service for scope
         res = requests.post(
             "http://identity-service:8000/graphql/",
             json={
                 "query": """
                 query ($id: Int!) {
-                    companyScope(companyId: $id)
+                companyScope(companyId: $id)
                 }
                 """,
-                "variables": {"id": int(company_id)},
+                "variables": {"id": company_id},
             },
             timeout=5,
         )
 
         scope = res.json()["data"]["companyScope"]
-
         return Lead.objects.filter(company_id__in=scope)
 schema = strawberry.federation.Schema(
     query=Query,
