@@ -3,7 +3,7 @@ from typing import List
 from .models import Lead
 from .kafka import publish_lead_created
 
-@strawberry.type
+@strawberry.federation.type(keys=["id"])
 class LeadType:
     id: int
     name: str
@@ -32,4 +32,7 @@ class Query:
     def leads(self) -> List[LeadType]:
         return Lead.objects.all()
 
-schema = strawberry.Schema(query=Query, mutation=Mutation)
+schema = strawberry.federation.Schema(
+    query=Query,
+    mutation=Mutation,
+)

@@ -58,3 +58,11 @@ services:
     depends_on:
       - kafka
       - postgres-crm
+  gateway:
+    build: ./gateway
+    restart: always
+    depends_on:
+      - identity-service
+      - crm-service
+    ports:
+      - "4000:4000"
